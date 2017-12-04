@@ -8,53 +8,50 @@ var uniqueValidator = require('mongoose-unique-validator');
 
 // env
 require('dotenv').config()
-console.log(process.env.DB_HOST, process.env.DB_USER, process.env.DB_PASS);
+
 
 // Import the mongoose module and set url connection
 const mongoose = require('mongoose'),
-      Schema = mongoose.Schema,
-      URL_DB_CONNECT = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-      console.log(URL_DB_CONNECT);
-      //
-      let db_nodepop_promise = mongoose.connect(URL_DB_CONNECT, { 
-        useMongoClient: true, 
-        //server: { poolSize: 4 },
-        promiseLibrary: require('bluebird') 
-      });
-      
-      //Data Schema
-      let user_schema = new Schema({
-        name: { type: String, required: true },
-        email: { type: String, unique: true },
-        password: { type: String, required: true }
-      });
-      let User = mongoose.model('User', user_schema);
-      user_schema.plugin(uniqueValidator);// .index({ unique: true });
-      user_schema.pre('save', (next)=>{
-        console.log('Save user from pre....');
-        next();
-      });
-      // Load into db.nodepop-pruebas
-      let user1 = new User({
-        name: 'Francisco',
-        email: 'francisco@email.com',
-        password: '12345'
-      });
-      user1.save((err)=>{
-        if(err){ return console.log('Error to save user1', err.message)}
-        //
-        return console.log('User salved success !!');
-      });
-      User.find({},function(err, user){
-        if(err){console.log('Error al buscar user', err.message);};
-        console.log(user);
-        return;
-      });
+  Schema = mongoose.Schema,
+  URL_DB_CONNECT = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+//
+let db_nodepop_promise = mongoose.connect(URL_DB_CONNECT, { 
+  useMongoClient: true, 
+  //server: { poolSize: 4 },
+  promiseLibrary: require('bluebird') 
+});
+/*eslint no-console: ["error", { allow: ["warn"] }] */
+console.log('State of connect is',db_nodepop_promise._readyState);      
+//Data Schema
+let user_schema = new Schema({
+  name: { type: String, required: true },
+  email: { type: String, unique: true },
+  password: { type: String, required: true }
+});
+let User = mongoose.model('User', user_schema);
+user_schema.plugin(uniqueValidator);
+user_schema.pre('save', (next)=>{
+  /*eslint no-console: "error"*/
+  console.log('Save user from pre....');
+  next();
+});
+// Load into db.nodepop-pruebas
+let user1 = new User({
+  name: 'Francisco',
+  email: 'francisco@email.com',
+  password: '12345'
+});
+user1.save((err)=>{
+  if(err){ console.log('Error to save user1', err.message); return; }
+  console.log('User salved success !!');
+  return;
+});
+User.find({},function(err, user){
+  if(err){console.log('Error al buscar user', err.message); return; }
+  console.log(user);
+  return;
+});
 
-      //Bind connection to error event (to get notification of connection errors)
-      //db_nodepop_promise.on('error', ()=>{console.error.bind(console, 'MongoDB connection error:');});
-      //db_nodepop_promise.on('connect', ()=>{console.error.bind(console, 'MongoDB connection success !!');});
-      //console.log(db_nodepop_promise);
 var index = require('./routes/index');
 var users = require('./routes/users');
 

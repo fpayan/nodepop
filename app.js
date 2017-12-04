@@ -37,9 +37,9 @@ user_schema.pre('save', (next)=>{
 });
 // Load into db.nodepop-pruebas
 let user1 = new User({
-  name: 'Francisco',
-  email: 'francisco@email.com',
-  password: '12345'
+  name: process.env.USER_NAME_FAKE,
+  email: process.env.USER_EMAIL_FAKE,
+  password: process.env.USER_PASS_FAKE
 });
 user1.save((err)=>{
   if(err){ console.log('Error to save user1', err.message); return; }
